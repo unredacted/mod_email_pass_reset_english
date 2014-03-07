@@ -29,7 +29,7 @@ local https_port = module:get_option("https_ports", { 443 });
 local http_port = module:get_option("http_ports", { 80 });
 
 local timer_repeat = 120;		-- repeat after 120 secs
-local mail_subject = "Cambio de la clave de tu cuenta en mijabber.es";
+local mail_subject = "Cambio de la clave de tu cuenta Jabber";
 local url_path = "/resetpass/";
 
 function enablessl()
