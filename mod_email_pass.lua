@@ -8,7 +8,7 @@ local datetime = require "util.datetime";
 local timer = require "util.timer";
 local jidutil = require "util.jid";
 
--- SMTP related params
+-- SMTP related params. Readed from config
 local os_time = os.time;
 local smtp = require "socket.smtp";
 local smtp_server = module:get_option_string("smtp_server", "localhost");
@@ -17,6 +17,10 @@ local smtp_ssl = module:get_option_boolean("smtp_ssl", false);
 local smtp_user = module:get_option_string("smtp_username");
 local smtp_pass = module:get_option_string("smtp_password");
 local smtp_address = module:get_option("smtp_from") or ((smtp_user or "no-responder").."@"..(smtp_server or module.host));
+local mail_subject = module:get_option_string("msg_subject")
+local mail_body = module:get_option_string("msg_body");
+local url_path = module:get_option_string("url_path", "/resetpass");
+
 
 -- This table has the tokens submited by the server
 tokens_mails = {};
@@ -29,8 +33,6 @@ local https_port = module:get_option("https_ports", { 443 });
 local http_port = module:get_option("http_ports", { 80 });
 
 local timer_repeat = 120;		-- repeat after 120 secs
-local mail_subject = "Cambio de la clave de tu cuenta Jabber";
-local url_path = "/resetpass/";
 
 function enablessl()
     local sock = socket.tcp()
@@ -265,10 +267,10 @@ function send_token_mail(form, origin)
 		
 		local url_token = generateToken(jid);
 		local url = generateUrl(url_token);
-		local mail_body =  render(get_template("sendtoken",".mail"), {jid = jid, url = url} );
+		local email_body =  render(get_template("sendtoken",".mail"), {jid = jid, url = url} );
 		
 		module:log("info", "Sending password reset mail to user %s", jid);
-		send_email(email, smtp_address, mail_body, mail_subject);
+		send_email(email, smtp_address, email_body, mail_subject);
 		return "ok";
 	end
 
@@ -290,9 +292,6 @@ function reset_password_with_token(form, origin)
 	if #password < 5 then
 		return nil, "La clave debe tener una longitud de al menos 5 caracteres";
 	end
-	if #password > 35 then
-		return nil, "La clave no puede ser mayor de 35 caracteres";
-	end
 	local jid = tokens_mails[token];
 	local user, host, resource = jidutil.split(jid);
 	
@@ -300,7 +299,7 @@ function reset_password_with_token(form, origin)
 	module:log("info", "Password changed with token for user %s", jid);
 	tokens_mails[token] = nil;
 	tokens_expiration[token] = nil;
-	sendMessage(jid, mail_subject,"La clave de tu cuenta Jabber ha sido cambiada correctamente.");
+	sendMessage(jid, mail_subject, mail_body);
 	return "ok";
 end
 
