@@ -1,14 +1,10 @@
-Hola:
+Hello,
 
-Si has recibido este email es porque has solicitado el reseteo de la
-clave  de tu cuenta Jabber/XMPP {jid}
+You are receiving this email because a password reset has been requested for your XMPP account {jid}
 
-Para proceder con el cambio de clave, haz click en el siguiente enlace:
+To proceed with the change of your password, click on the following link: {url}
 
-{url}
+If you have not requested to reset your password, please ignore this message.
 
-Si no has solicitado resetear tu clave, ignora este mensaje.
-
-Atentamente, el equipo de mijabber.es
-
-
+Sincerely, 
+The XMPP.is Team
