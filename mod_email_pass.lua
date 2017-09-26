@@ -22,7 +22,7 @@ local mail_body = module:get_option_string("msg_body");
 local url_path = module:get_option_string("url_path", "/resetpass");
 
 
--- This table has the tokens submited by the server
+-- This table has the tokens submitted by the server
 tokens_mails = {};
 tokens_expiration = {};
 
@@ -32,7 +32,7 @@ local http_host = module:get_option_string("http_host");
 local https_port = module:get_option("https_ports", { 443 });
 local http_port = module:get_option("http_ports", { 80 });
 
-local timer_repeat = 120;		-- repeat after 120 secs
+local timer_repeat = 120; -- repeat after 120 secs
 
 function enablessl()
     local sock = socket.tcp()
@@ -74,7 +74,7 @@ function send_email(address, smtp_address, message_text, subject)
 	local mesgt = {
 		headers = {
 			to = address;
-			subject = subject or ("Jabber password reset "..jid_bare(from_address));
+			subject = subject or ("XMPP Password Reset "..jid_bare(from_address));
 		};
 		body = message_text;
 	};
@@ -157,7 +157,7 @@ function generateToken(address)
 		tokens_expiration[token] = os.time();
 		return token
 	else
-		module:log("error", "Reset password token collision: '%s'", token);
+		module:log("error", "Password reset token collision: '%s'", token);
 		return generateToken(address)
 	end
 end
@@ -170,7 +170,7 @@ function isExpired(token)
 		-- token is valid yet
 		return nil;
 	else
-		-- token invalid, we can create a fresh one.
+		-- token invalid, we can create a fresh one
 		return true;
 	end 
 end
@@ -187,7 +187,7 @@ expireTokens = function()
 	return timer_repeat;
 end
 
--- Check if a user has a active token not used yet.
+-- Check if a user has an active token not used yet
 function hasTokenActive(address)
 	for token,value in pairs(tokens_mails) do
 		if address == value and not isExpired(token) then
@@ -231,38 +231,38 @@ function send_token_mail(form, origin)
 	local jid = prepped_username .. "@" .. host;
 	
     if not prepped_username then
-    	return nil, "El usuario contiene caracteres incorrectos";
+    	return nil, "User contains incorrect characters";
     end
     if #prepped_username == 0 then
-    	return nil, "El campo usuario está vacio";
+    	return nil, "User field is empty";
     end
     if not usermanager.user_exists(prepped_username, module.host) then
-    	return nil, "El usuario NO existe";
+    	return nil, "User does not exist";
     end
 	
 	if #prepped_mail == 0 then
-    	return nil, "El campo email está vacio";
+    	return nil, "The email field is empty";
     end
 
 	local vcarduser = get_user_vcard(prepped_username, module.host);
 	
 	if not vcarduser then
-		return nil, "User has not vCard";
+		return nil, "User has no vCard";
 	else
 		if not vcarduser.EMAIL then
-			return nil, "Esa cuente no tiene ningún email configurado en su vCard";
+			return nil, "That account does not have any email set on its vCard";
 		end
 
 		email = string.lower(vcarduser.EMAIL[1]);
 
 		if email ~= string.lower(prepped_mail) then
-			return nil, "Dirección eMail incorrecta";
+			return nil, "Incorrect email address";
 		end
 		
-		-- Check if has already a valid token, not used yet.
+		-- Check if it has a valid token already, and is unused
 		if hasTokenActive(jid) then
 			local valid_until = tokens_expiration[hasTokenActive(jid)] + 86400;
-			return nil, "Ya tienes una petición de restablecimiento de clave válida hasta: " .. datetime.date(valid_until) .. " " .. datetime.time(valid_until);
+			return nil, "You already have a valid reset request until: " .. datetime.date(valid_until) .. " " .. datetime.time(valid_until);
 		end
 		
 		local url_token = generateToken(jid);
@@ -281,16 +281,16 @@ function reset_password_with_token(form, origin)
 	local password = form.newpassword;
 	
 	if not token then
-		return nil, "El Token es inválido";
+		return nil, "Token is invalid";
 	end
 	if not tokens_mails[token] then
-		return nil, "El Token no existe o ya fué usado";
+		return nil, "Token does not exist or has already been used";
 	end
 	if not password then
-		return nil, "La campo clave no puede estar vacio";
+		return nil, "Key field can not be empty";
 	end
 	if #password < 5 then
-		return nil, "La clave debe tener una longitud de al menos 5 caracteres";
+		return nil, "The password must be at least 5 characters long";
 	end
 	local jid = tokens_mails[token];
 	local user, host, resource = jidutil.split(jid);
@@ -323,7 +323,7 @@ function handle_form_token(event)
 	local token_ok, token_err = send_token_mail(form, request);
         response:send(generate_register_response(event, form, token_ok, token_err));
 
-	return true; -- Leave connection open until we respond above
+	return true; -- Leave connection open until we respond to the above
 end
 
 function generate_reset_success(event, form)
@@ -346,7 +346,7 @@ function handle_form_reset(event)
         local reset_ok, reset_err = reset_password_with_token(form, request);
         response:send(generate_reset_response(event, form, reset_ok, reset_err));
 
-        return true; -- Leave connection open until we respond above
+        return true; -- Leave connection open until we respond to the above
 
 end
 
