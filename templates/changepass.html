@@ -3,34 +3,32 @@
   <head>
   <meta charset="utf-8">
   <link rel="stylesheet" type="text/css" href="style.css" />  
-  <title>Reseteo de la clave de tu cuenta Jabber</title>
+  <title>XMPP Password Reset</title>
   </head>
   <body>
-    <div id="estilo" class="formulario">
-      <h1>Reseteo de la clave de tu cuenta Jabber</h1>
+    <div id="style" class="form">
+      <h1>Reset your XMPP account password</h1>
       <form action="{path}" method="POST">
 	  		<p class="error">{notice}</p>   
 			<label>            
 	    		Usuario:
-	    		<span class="small">Introduce tu usuario</span>
+	    		<span class="small">Enter your username</span>
 			</label>
 			<input type="text" name="username" required>@{hostname}
 			<div class="spacer"></div>
 			<label>
 	    		Email:        
-	    		<span class="small">Introduce tu email</span>
+	    		<span class="small">Enter your email</span>
 			</label> 
 		<input type="text" name="email" required>	
 		<div class="spacer"></div>
 	  
-		<input id="button" class="button" type="submit" value="Enviar!">
+		<input id="button" class="button" type="submit" value="Submit">
 		<div class="spacer"></div>
       </form>
       <p>
-      Al pulsar sobre el bot&oacute;n, se enviar&aacute; a la direcci&oacute;n de correo que figura
-      en tu vCard un enlace en el que deber&aacute;s entrar.<br />     
+      When you click "Submit" and the correct information is entered, a password reset link will be emailed to you.<br />     
       </p>
     </div>    
   </body>
 </html>
-
